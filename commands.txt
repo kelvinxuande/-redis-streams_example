@@ -1,0 +1,5 @@
+docker run -d --rm --net host --name local-redis-server -v /home/ggdeveloper/data/redis-server-data/:/data redis:7.0-rc1 redis-server /data/redis.conf --loglevel warning
+
+python3 producer.py -sc 0
+
+python3 consumer.py -cn redis-stream-0
