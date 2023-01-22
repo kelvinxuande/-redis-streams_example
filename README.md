@@ -1,5 +1,3 @@
-# Reference Docker Redis Pattern
-
 ## Introduction
 A message broker to facillitate lossless messaging. The intent is to replace the [previous solution](https://git.siotgov.tech/kelvintan/l4t_docker-kafka_example) implemented with Kafka; with this one implemented with Redis. From preliminary tests, this solution fulfills the same set of common project requirements at lower RAM and disk memory usage.
 
