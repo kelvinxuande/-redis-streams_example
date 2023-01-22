@@ -1,0 +1,56 @@
+#Docker version to use
+version: '3'
+
+#Container services
+services:
+
+    zookeeper:
+        container_name: zookeeper
+        # official docker Apache Zookeeper image
+        image: cfei/zookeeper:latest-multiarch
+        network_mode: host
+        environment: 
+            ZOO_ID: 1  
+            ZOO_PORT: 2181
+            ZOO_TICK_TIME: 2000
+            ZOO_MAX_SESSION_TIMEOUT: 60000
+        restart: always #no, always, on-failure, unless-stopped
+
+    kafka:
+        container_name: kafka
+        image: cfei/kafka:latest-multiarch
+        depends_on:
+            - zookeeper
+        network_mode: host
+        environment: 
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL://localhost:9093,EXTERNAL://localhost:9092
+            KAFKA_LISTENERS: INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        restart: always #no, always, on-failure, unless-stopped
+
+    producer:
+        container_name: producer
+        image: producer
+        depends_on: 
+            - zookeeper
+            - kafka
+        network_mode: host
+        build:
+            context: producer/
+            dockerfile: Dockerfile
+        command: ["python3", "producer.py"]
+
+    consumer:
+        container_name: consumer
+        image: consumer
+        depends_on: 
+            - zookeeper
+            - kafka
+            - producer
+        network_mode: host
+        build:
+            context: consumer/
+            dockerfile: Dockerfile
+        command: ["python3", "consumer.py"]

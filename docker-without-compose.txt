@@ -1,0 +1,9 @@
+docker run -d --rm --name zookeeper --net host -e ZOO_ID=1 -e ZOO_PORT=2181 -e ZOO_TICK_TIME=2000 -e ZOO_MAX_SESSION_TIMEOUT=60000 cfei/zookeeper:latest-multiarch
+
+docker run -d --rm --name kafka --net host -e KAFKA_BROKER_ID=1 -e KAFKA_ZOOKEEPER_CONNECT=localhost:2181 -e KAFKA_ADVERTISED_LISTENERS=INTERNAL://localhost:9093,EXTERNAL://localhost:9092 -e KAFKA_LISTENERS=INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 cfei/kafka:latest-multiarch
+
+docker build -t test-kafka-producer .
+docker run -it --rm --net host test-kafka-producer python3 producer.py
+
+docker build -t test-kafka-consumer .
+docker run -it --rm --net host test-kafka-consumer python3 consumer.py
